@@ -17,4 +17,55 @@
   	 
  3 run test script in peb-****/tests
  
+ A  checklist for install on CentOS by: sphinx BD
+ 
+ 
+
+This post is kinda a reference & checklist for me to be used in future, as the installation of PHP Erlang Bridge (peb) wasn’t as simple to follow the installation steps stated in INSTALL file in the source package. If you’ve come across this page by any chance, may be it will be helpful for you as well.
+
+Step 1: Install erlang and this is really easy
+
+sudo yum install erlang
+
+Step 2: Install php-devel package if you already didn’t.  This package will provide the phpize tool that you’ll require to build the peb and any other php extensions) from source
+
+sudo yum install php-devel
+
+Step 3: Download and extract latest source archive of peb from http://code.google.com/p/mypeb/downloads/list and extract & phpize
+
+wget http://mypeb.googlecode.com/files/peb-0.20b.tar.gz
+tar -xzf peb-0.20b.tar.gz
+cd peb_release
+phpize
+
+Step 4: Now comes the tricky part, i.e. to run configure with special parameters. Find out where is the erl_interface package is installed, which was installed with erlang as a dependency and provides all the library and header files that will be required to configure the build script for peb. Get the first line (the installation path of erl_interface) of following command and use it in following step. I will refer this as {$ERL_INTERFACE_PATH} in the next step.
+
+rpm -ql erlang-erl_interface
+
+Step 5: Execute following command based on the architecture of your CentOS installation
+
+# use this if you have 64 bit architecture
+./configure CC="gcc -m64 -L{$ERL_INTERFACE_PATH}/lib -I{$ERL_INTERFACE_PATH}/include" --enable-peb
+
+# use this if you have 32 bit architecture
+./configure CC="gcc -L{$ERL_INTERFACE_PATH}/lib -I{$ERL_INTERFACE_PATH}/include" --enable-peb
+
+Step 6: Now follow the rest of the steps mentioned in INSTALL document to install the php extension.
+
+make
+sudo make install
+
+Step 7: Edit php.ini to add the following line
+
+extension=peb.so
+
+Step 8: Restart your web server (usually apache httpd)
+
+sudo service httpd restart
+
+Now you have installed peb extension and ready to start play with examples explained in peb wiki
+
+Happy erlanging with php :-)
+
+ 
  
